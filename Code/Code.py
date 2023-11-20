@@ -345,7 +345,7 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         ax0[1,1].xaxis.set_label_position('top') 
         ax0[1,1].set_title(r'$\sigma_{ln tts}$')
         
-        plt.savefig('4x4.png',dpi=300,bbox_inches='tight');
+        plt.savefig('Code\4x4.png',dpi=300,bbox_inches='tight');
         
     # Save file of Vs
     if save_file == True:

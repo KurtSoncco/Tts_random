@@ -7,7 +7,7 @@ This project uses the Travel Time Randomization method to create N profiles for 
 
 
 <p align="center">
-<img src="Code\4x4.png" alt="Ouput" width="450"/>
+<img src="4x4.png" alt="Ouput" width="450"/>
 </p>
 
 ## Requirements
