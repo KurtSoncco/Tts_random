@@ -7,6 +7,7 @@ Created on Fri Oct 20 16:23:28 2023
 
 import pandas as pd
 from Code import Travel_time
+from deepsoil import write_file, deepsoil_input
 
 ## Load Input Vs Profile
 # The Vs profile can be loaded in different ways. You can read from a .txt
@@ -21,12 +22,13 @@ from Code import Travel_time
 # Vs follows the same format as Depth, with first value being shear wave
 # velocity of first layer, etc..., and last value being the Vs of the
 # halfspace/bedrock.
-mat = pd.read_csv("Example_Profile.csv",header=None, names=['Depth','Vs'])
+mat = pd.read_csv("Code\Example_Profile.csv",header=None, names=['Depth','Vs'])
 Depth = mat['Depth'].values.reshape(-1)
 Vs = mat['Vs'].values.reshape(-1)
 
 # Function
 Vs_all, depth_all, tts_all, base_tts = Travel_time(Vs, Depth)
+deepsoil_input(Vs_all,depth_all)
 
 
 
