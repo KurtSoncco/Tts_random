@@ -2,7 +2,9 @@
 
 Based on Prof. Mohamad Hallal et al. [[1]](#1) paper, the following uses the Travel Time Randomization method to create N profiles for Spatial Variability analysis.
 
-![](Code\4x4.png)
+<p align="center">
+<img src="Code\4x4.png" alt="Ouput" width="450"/>
+</p>
 
 ## Input 
 The folllowing code requires a csv file with the data of Vs and Depth of each layer. (Currently, the code is using S.I. units).
