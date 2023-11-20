@@ -282,7 +282,7 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         # Because of how stairs() works, we will plot depth on x-axis and Vs on
         # y-axis and then flip the view to get correct plot
         ax0[0,0].step(Vs, Depth, '-k', lw=1.2, label='Base-Case Vs', where='pre')
-        ax0[0,0].step(median_Vs, depth_inter, '--b', lw=1.0, label='Median', where='pre')
+        ax0[0,0].step(median_Vs, depth_inter, '--', color='#90EE90', lw=1.0, label='Median', where='pre')
         #view([90 -90])
         ax0[0,0].set_xlim(xmin=0)
         ax0[0,0].set_ylim(ymin=0,ymax=Depth[-1])
@@ -321,7 +321,7 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         # Because of how stairs() works, we will plot depth on x-axis and Vs on
         # y-axis and then flip the view to get correct plot
         ax0[1,0].plot(base_tts, Depth, '-k', lw=1.2, label='Base-Case tts')
-        ax0[1,0].plot(median_tts, depth_inter, '--b', label='Median')
+        ax0[1,0].plot(median_tts, depth_inter, '--', color='#90EE90', label='Median')
         #view([90 -90])
         ax0[1,0].set_xlim(xmin=0)
         ax0[1,0].set_ylim(ymin=0,ymax=Depth[-1])
@@ -338,7 +338,7 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         ax0[1,1].text(sigmalntts+0.002, 60.5, 'Input: '+str(sigmalntts), rotation=90, color='red')
         ax0[1,1].set_ylabel('Depth (m)')
         #ax0[0,1].set_xlabel(r'$\sigma_{ln V_s}$')
-        ax0[1,1].set_xlim(xmin=0)
+        ax0[1,1].set_xlim(xmin=0,xmax=0.10)
         ax0[1,1].set_ylim(ymin=0,ymax=Depth[-1])
         ax0[1,1].invert_yaxis()
         ax0[1,1].xaxis.tick_top()
