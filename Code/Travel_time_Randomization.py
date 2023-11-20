@@ -59,6 +59,19 @@ def tts_Rand_Halfspace(zh_mean, Sigmaln_zh, Vh_mean, Sigmaln_Vh, correlation_h, 
 
 
 def tts_Rand_Layers(c3, c1, c2, minRate, maxRate, zh_mean, Sigmaln_zh, Nprofiles):
+    """
+    This function generates N realizations of column models, each with multiple layers. 
+    It initializes variables for depth and rate vectors of randomized profiles.
+
+    Parameters:
+    c3, c1, c2 (float): Constants used in the function (refer to paper).
+    minRate, maxRate (float): The minimum and maximum rate values.
+    zh_mean, Sigmaln_zh (float): The mean and standard deviation for the half-space depth.
+    Nprofiles (int): The number of realizations of column models to generate.
+
+    Returns:
+    dict: Two dictionaries, depth_all and rate_all, which include depth and rate vectors of randomized profiles respectively.
+    """
     # Initialize variables for speed
     # these are defined as cell arrays because number of layers might be
     # different for different column models (that's why, we can't save them in
@@ -120,6 +133,17 @@ def tts_Rand_Layers(c3, c1, c2, minRate, maxRate, zh_mean, Sigmaln_zh, Nprofiles
 
 
 def tts_Rand_Merging(depth_all, z_halfspace):
+
+    """
+    This function merges the depth of all layers and the half-space depth for each realization of the N randomized profiles.
+
+    Parameters:
+    depth_all (list of lists): A list containing the depth of all layers for each profile.
+    z_halfspace (numpy array): An array containing the half-space depth for each realization of the N randomized profiles.
+
+    Returns:
+    dict: A dictionary where the keys are the indices of the realizations and the values are the merged depths for each realization.
+    """
     
     # Create output format
     merged_depths = dict()
@@ -173,7 +197,19 @@ def tts_Rand_Merging(depth_all, z_halfspace):
 
 
 def tts_Rand_PostMerging(merged_depths, c3, c1, c2, minRate, maxRate, zh_mean, Sigmaln_zh):
-    
+    """
+    This function processes the merged depths from tts_Rand_Merging. It creates the final merged depths and 
+    keeps track of halfspace depths that were unsuccessfully merged.
+
+    Parameters:
+    merged_depths (dict): A dictionary where the keys are the indices of the realizations and the values are the merged depths for each realization.
+    c3, c1, c2 (float): Constants used in the function (refer to paper).
+    minRate, maxRate (float): The minimum and maximum rate values.
+    zh_mean, Sigmaln_zh (float): The mean and standard deviation for the half-space depth.
+
+    Returns:
+    dict: The final merged depths dictionary.
+    """
     
     # Create output format
     final_merged_depths = merged_depths;
@@ -249,6 +285,21 @@ def tts_Rand_PostMerging(merged_depths, c3, c1, c2, minRate, maxRate, zh_mean, S
 
 
 def tts_Rand_Vs(depth_all, base_depth, base_Vs, corr_model, sigmalntts, Vs_halfspace, delta_corr):
+    """
+    This function generates shear wave velocity (Vs) profiles based on the correlation model provided.
+
+    Parameters:
+    depth_all (dict): A dictionary where the keys are the indices of the realizations and the values are the merged depths for each realization.
+    base_depth (float): The base depth value.
+    base_Vs (float): The base shear wave velocity value.
+    corr_model (str): The correlation model to use. Options are 'GeoMatrix_A&B', 'GeoMatrix_C&D', 'USGS_A&B', and 'USGS_C&D'.
+    sigmalntts (float): The standard deviation of the natural logarithm of the travel time.
+    Vs_halfspace (float): The shear wave velocity of the half-space.
+    delta_corr (float): The delta correlation value.
+
+    Returns:
+    dict: A dictionary where the keys are the indices of the realizations and the values are the Vs profiles for each realization.
+    """
     
     # Correlation parameters (see Table 3.3 in Kottke and Rathje 2009)
     if corr_model == 'GeoMatrix_A&B':      # Rock and shallow soil
@@ -393,6 +444,22 @@ def tts_Rand_Vs(depth_all, base_depth, base_Vs, corr_model, sigmalntts, Vs_halfs
 
 
 def extrapolate_plot(Vs_all, tts_all, base_tts, Vs, Depth, final_merged_depths, Nprofiles, threshold=0.50):
+    """
+    This function extrapolates and plots the shear wave velocity (Vs) and travel time (tts) profiles.
+
+    Parameters:
+    Vs_all (dict): A dictionary where the keys are the indices of the realizations and the values are the Vs profiles for each realization.
+    tts_all (dict): A dictionary where the keys are the indices of the realizations and the values are the tts profiles for each realization.
+    base_tts (float): The base travel time value.
+    Vs (numpy array): The shear wave velocity values.
+    Depth (numpy array): The depth values.
+    final_merged_depths (dict): A dictionary where the keys are the indices of the realizations and the values are the final merged depths for each realization.
+    Nprofiles (int): The number of realizations of column models to generate.
+    threshold (float, optional): The threshold value to increase the maximum depth by. Default is 0.50.
+
+    Returns:
+    numpy array: The new depth values.
+    """
     
     # Extract the maximum depth
     df = pd.DataFrame.from_dict(final_merged_depths, orient='index').transpose()
@@ -421,14 +488,30 @@ def extrapolate_plot(Vs_all, tts_all, base_tts, Vs, Depth, final_merged_depths, 
         new_Vs_all[n] = np.append(Vs_all[n],Vs_all[n][-1])
         new_final_merged_depths[n] = new_depth_all
 
-    
-    
-    
     return new_Vs_all, new_tts_all, new_base_tts, new_Vs, new_depth, new_final_merged_depths
 
 
 
 def standard_deviation(Vs_all, tts_all, base_tts, base_Vs, base_Depth, depth_all, Nprofiles):
+    """
+    This function calculates the standard deviation of Vs and tts across different
+    depths by interpolating at different values of Vs or tts and calculating the 
+    standard deviation of the log normal distribution.
+
+    Parameters:
+    Vs_all (dict): A dictionary where the keys are the indices of the realizations and the values are the Vs profiles for each realization.
+    tts_all (dict): A dictionary where the keys are the indices of the realizations and the values are the tts profiles for each realization.
+    base_tts (float): The base travel time value.
+    base_Vs (float): The base shear wave velocity value.
+    base_Depth (numpy array): The base depth values.
+    depth_all (dict): A dictionary where the keys are the indices of the realizations and the values are the depths for each realization.
+    Nprofiles (int): The number of realizations of column models to generate.
+
+    Returns:
+    dict: Two dictionaries, Vs_interp1d and tts_interp1d, which include interpolated Vs and tts values respectively.
+    numpy array: An array of interpolated depth values.
+    """
+    
     # This code calculates the standard deviation of Vs and tts across different
     # depths by interpolating at different values of Vs or tts and calculating the 
     # standard deviation of the log normal distribution.

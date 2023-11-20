@@ -347,19 +347,6 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         
         plt.savefig('4x4.png',dpi=300,bbox_inches='tight');
         
-        
-        
-    
-
-        
-        
-        
-        
-        
-    
-        
-    
-    
     # Save file of Vs
     if save_file == True:
         df1 = pd.DataFrame.from_dict(Vs_all, orient='index').transpose()
