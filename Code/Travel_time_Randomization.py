@@ -463,7 +463,7 @@ def extrapolate_plot(Vs_all, tts_all, base_tts, Vs, Depth, final_merged_depths, 
     
     # Extract the maximum depth
     df = pd.DataFrame.from_dict(final_merged_depths, orient='index').transpose()
-    max_depth = np.max(np.max(df))
+    max_depth = df.max().max()
     
     # Increase by threshold
     new_max = max_depth * (1+threshold)
@@ -518,7 +518,7 @@ def standard_deviation(Vs_all, tts_all, base_tts, base_Vs, base_Depth, depth_all
     
     # First, we create a pandas dataframe to compute the max depth
     df = pd.DataFrame.from_dict(depth_all, orient='index').transpose()
-    max_depth = np.max(np.max(df))
+    max_depth = df.max().max()
     
     # Create an array of depth until that max_depth
     depth_inter = np.linspace(0, max_depth,100)
@@ -535,7 +535,10 @@ def standard_deviation(Vs_all, tts_all, base_tts, base_Vs, base_Depth, depth_all
         tts_interp1d[n] = f(depth_inter)
         
     df2 = pd.DataFrame.from_dict(tts_interp1d, orient='columns')
-    std_tts = np.std(np.log(df2.values),axis=1)
+    # To avoid the RuntimeWarning, ensure that you're not trying to calculate the logarithm of zero or a negative number
+    df2_values = df2.values
+    df2_values[df2_values <= 0] = np.nan
+    std_tts = np.std(np.log(df2_values), axis=1)
     
     # For Vs
     Vs_interp = {}
