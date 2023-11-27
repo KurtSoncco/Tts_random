@@ -26,7 +26,7 @@ mat = pd.read_csv("Code\Example_Profile.csv",header=None, names=['Depth','Vs'])
 Depth = mat['Depth'].values.reshape(-1)
 Vs = mat['Vs'].values.reshape(-1)
 
-# Function
+## Run Travel_time function
 Vs_all, depth_all, tts_all, base_tts = Travel_time(Vs, Depth)
 deepsoil_input(Vs_all,depth_all)
 

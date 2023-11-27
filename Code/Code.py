@@ -335,7 +335,7 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         # Plot std_lntts
         ax0[1,1].plot(std_tts, depth_inter)
         ax0[1,1].vlines(sigmalntts,ymin=0,ymax=Depth[-1],color='red')
-        ax0[1,1].text(sigmalntts+0.002, 60.5, 'Input: '+str(sigmalntts), rotation=90, color='red')
+        ax0[1,1].text(sigmalntts+0.002, Depth[-1]*0.95, 'Input: '+str(sigmalntts), rotation=90, color='red')
         ax0[1,1].set_ylabel('Depth (m)')
         #ax0[0,1].set_xlabel(r'$\sigma_{ln V_s}$')
         ax0[1,1].set_xlim(xmin=0,xmax=0.10)
