@@ -38,7 +38,7 @@ for i in dataframes.keys():
 plt.title('Vs Profiles')
 plt.ylabel('Depth (m)')
 plt.xlabel('Vs (m/s)')
-plt.legend()
+plt.legend(fontsize=9.5)
 plt.xlim(0, 2500)
 plt.ylim(ymin=0)
 # Get the current Axes object and invert the y-axis
@@ -59,7 +59,7 @@ for i in dataframes.keys():
     data = dataframes[i]
     Vs = data.iloc[:, 1].values
     Depth = data.iloc[:, 0].values
-    print(i)
+    #print(i)
     Vs_all, depth_all, tts_all, base_tts, std_tts, std_Vs, depth_inter = Travel_time(Vs, Depth, fig_plot=False, save_file=False)
     results[i] = [std_tts, std_Vs, depth_inter]
 
@@ -75,12 +75,12 @@ for idx, i in enumerate(results_df.index):
 
 plt.title('Standard Deviation of Travel Time')
 plt.vlines(0.05, 0, max_Depth, colors='red')
-plt.text(0.05+0.002, max_Depth*0.95, 'Input: '+str(0.05), rotation=90, color='red')
+plt.text(0.05+0.002, max_Depth*0.95, 'Input: '+str(0.05), rotation=90, color='red', fontsize=10)
 plt.ylabel('Depth (m)')
 plt.ylim(0, max_Depth)
 plt.xlim(0, 0.1)
 plt.xlabel(r'$\sigma_{ln tts}$')
-plt.legend()
+plt.legend(fontsize=9.5)
 
 # Get the current Axes object and invert the y-axis
 ax = plt.gca()
@@ -100,12 +100,12 @@ for idx, i in enumerate(results_df.index):
 
 plt.title('Standard Deviation of Vs')
 plt.vlines(0.05, 0, max_Depth, colors='red')
-plt.text(0.05+0.002, max_Depth*0.95, 'Input: '+str(0.05), rotation=90, color='red')
+plt.text(0.05+0.002, max_Depth*0.95, 'Input: '+str(0.05), rotation=90, color='red', fontsize=10)
 plt.ylabel('Depth (m)')
 plt.ylim(0, max_Depth)
 plt.xlim(0, 0.5)
 plt.xlabel(r'$\sigma_{ln Vs}$')
-plt.legend()
+plt.legend(fontsize=9.5)
 
 # Get the current Axes object and invert the y-axis
 ax = plt.gca()
