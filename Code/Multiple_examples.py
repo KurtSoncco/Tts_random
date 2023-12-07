@@ -3,6 +3,10 @@ import pandas as pd
 import os
 from Code import Travel_time
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set the style of the plots
+sns.set_theme(style='ticks', font_scale=1.5)
 
 # Get a list of all CSV files in the "examples" folder
 # os.listdir() returns a list of all files in the specified directory
@@ -65,12 +69,9 @@ results_df = pd.DataFrame.from_dict(results, orient='index', columns=['std_tts',
 # Extract the maximum depth from the results
 max_Depth = results_df['depth_inter'].apply(max).max()
 
-# List of markers
-markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd', '|', '_']
-
 ## Plot the results for each index across depth of std_tts
 for idx, i in enumerate(results_df.index):
-    plt.plot(results_df.loc[i, 'std_tts'], results_df.loc[i, 'depth_inter'], label=i, marker=markers[idx % len(markers)])
+    plt.plot(results_df.loc[i, 'std_tts'], results_df.loc[i, 'depth_inter'], label=i)
 
 plt.title('Standard Deviation of Travel Time')
 plt.vlines(0.05, 0, max_Depth, colors='red')
@@ -95,7 +96,7 @@ plt.show()
 
 ## Plot the results for each index across depth of std_Vs
 for idx, i in enumerate(results_df.index):
-    plt.plot(results_df.loc[i, 'std_Vs'], results_df.loc[i, 'depth_inter'], label=i, marker=markers[idx % len(markers)])
+    plt.plot(results_df.loc[i, 'std_Vs'], results_df.loc[i, 'depth_inter'], label=i)
 
 plt.title('Standard Deviation of Vs')
 plt.vlines(0.05, 0, max_Depth, colors='red')
