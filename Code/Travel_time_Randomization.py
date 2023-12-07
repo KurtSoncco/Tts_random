@@ -233,7 +233,7 @@ def tts_Rand_PostMerging(merged_depths, c3, c1, c2, minRate, maxRate, zh_mean, S
         ratez = c3*(mid_depth[-1]+c1)**(-c2);
     
         # check if rate of last layer is acceptable
-        if (minRate*ratez > temp_rate[-1]) and (temp_rate[-1] > maxRate*ratez):
+        if len(temp_rate) > 0 and (minRate*ratez > temp_rate[-1]) and (temp_rate[-1] > maxRate*ratez):
     
             # if not acceptable, save the bedrock that was unsuccessfully
             # merged to re-simulate columns and re-merge
@@ -268,7 +268,7 @@ def tts_Rand_PostMerging(merged_depths, c3, c1, c2, minRate, maxRate, zh_mean, S
             ratez = c3*(mid_depth[-1]+c1)**(-c2);
     
             # check if rate of last layer is acceptable
-            if (minRate*ratez > temp_rate[-1]) and (temp_rate[-1] > maxRate*ratez):
+            if len(temp_rate) > 0 and (minRate*ratez > temp_rate[-1]) and (temp_rate[-1] > maxRate*ratez):
                 
                 # if acceptbale, append
                 final_merged_depths[rejected_models[n]] = merged_depths[n];
@@ -508,8 +508,12 @@ def standard_deviation(Vs_all, tts_all, base_tts, base_Vs, base_Depth, depth_all
     Nprofiles (int): The number of realizations of column models to generate.
 
     Returns:
-    dict: Two dictionaries, Vs_interp1d and tts_interp1d, which include interpolated Vs and tts values respectively.
-    numpy array: An array of interpolated depth values.
+    std_tts (numpy array): The standard deviation of the log of the interpolated travel times.
+    std_Vs (numpy array): The standard deviation of the log of the interpolated shear wave velocities.
+    depth_inter (numpy array): The interpolated depth values.
+    median_tts (numpy array): The median of the interpolated travel times.
+    median_Vs (numpy array): The median of the interpolated shear wave velocities.
+    
     """
     
     # This code calculates the standard deviation of Vs and tts across different

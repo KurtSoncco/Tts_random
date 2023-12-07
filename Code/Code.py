@@ -11,7 +11,7 @@ from Travel_time_Randomization import *
 import matplotlib.pyplot as plt
 
 
-def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.05,sigmalntts=0.05,c_values=None,fig_plot=True,save_file=True):
+def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.05,sigmalntts=0.05,c_values_Toro=None,half_space_Toro=None,delta_rho=None,fig_plot=True,save_file=True):
     """
     This main function creates the N profiles with travel time randomization.
     
@@ -22,7 +22,9 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
     Sigmaln_zh (float, optional): Logarithmic standard deviation of zh. Default is 0.05.
     Sigmaln_Vh (float, optional): Logarithmic standard deviation of Vh. Default is 0.05.
     sigmalntts (float, optional): Logarithmic standard deviation of tts. Default is 0.05.
-    c_values (list, optional): Coefficients for layer occurrence rate parameter. Default is None.
+    c_values_Toro (list, optional): Coefficients for layer occurrence rate parameter. Default is None (Pasari original parameters).
+    half_space_Toro (list, optional): Parameters for halspace depth generation. Default is None (Pasari original paramters).
+    delta_rho (float, optional): Fixed value for correlation parameter to avoid unrealistic Vs values. Default is None. (Fixed value of 0.2)
     fig_plot (bool, optional): If True, the function will plot the results. Default is True.
     save_file (bool, optional): If True, the function will save the results to a file. Default is True.
     
@@ -50,33 +52,36 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
     
     
     # Unless specified:
-    if c_values == None:
+    if c_values_Toro == None:
         # Toro traditional model 
         c1 = 10.86;
         c2 = 0.89;
         c3 = 1.98;
-        
-        
+
+        # Toro's limit for interface rate
+        minRate = 0.5;
+        maxRate = 1.5;
+    else:
+        c1,c2,c3,minRate,maxRate = c_values_Toro
+
+    if half_space_Toro == None:
+        # Parameters for halspace depth generation, for generic case
         rho200 = 0.766;
         d0 = 0;
         b = 0.2355;
         rho0 = 0.6364;
         delta = 5.8532;
-        
-        
-        correlation_h = 0.508;
-        delta_corr = 0.2;
-        minRate = 0.7;
-        maxRate = 1.5;
-    else:
-        c1,c2,c3,rho200,d0,b,rho0,delta,correlation_h,delta_corr,minRate,maxRate = c_values
-    
-    
-    ## Additional Inputs
 
-    #Sigmaln_zh= 0.05; # logarithmic standard deviation of the halfspace depth
-    #Sigmaln_Vh = 0.05; # logarithmic standard deviation of the halfspace Vs
-    #Nprofiles = 50; # Number of randomized profiles to generate
+        # Parameter for halspace velocity randomization        
+        correlation_h = 0.508;
+    else: 
+        rho200,d0,b,rho0,delta,correlation_h = half_space_Toro
+
+    if delta_rho == None:
+        # Fixed value for correlation parameter to avoid unrealistic Vs values
+        delta_corr = 0.2;
+    else:
+        delta_corr = delta_rho
     
     # Plot Vs profile
     if fig_plot == True:
@@ -317,9 +322,7 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
                      alpha=0.5, color=[.5,.5,.5])
     
     
-        # Plot Base-case Vs
-        # Because of how stairs() works, we will plot depth on x-axis and Vs on
-        # y-axis and then flip the view to get correct plot
+        # Plot Base-case tts
         ax0[1,0].plot(base_tts, Depth, '-k', lw=1.2, label='Base-Case tts')
         ax0[1,0].plot(median_tts, depth_inter, '--', color='#90EE90', label='Median')
         #view([90 -90])
@@ -359,4 +362,4 @@ def Travel_time(Vs: list,Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.0
         df.to_csv("Data.csv")
         
 
-    return Vs_all, final_merged_depths, tts_all, base_tts
+    return Vs_all, final_merged_depths, tts_all, base_tts, std_tts, std_Vs, depth_inter

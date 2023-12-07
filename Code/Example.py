@@ -7,7 +7,8 @@ Created on Fri Oct 20 16:23:28 2023
 
 import pandas as pd
 from Code import Travel_time
-from deepsoil import write_file, deepsoil_input
+from deepsoil import deepsoil_input
+from strata_output import strataPy_output
 
 ## Load Input Vs Profile
 # The Vs profile can be loaded in different ways. You can read from a .txt
@@ -27,8 +28,9 @@ Depth = mat['Depth'].values.reshape(-1)
 Vs = mat['Vs'].values.reshape(-1)
 
 ## Run Travel_time function
-Vs_all, depth_all, tts_all, base_tts = Travel_time(Vs, Depth)
-deepsoil_input(Vs_all,depth_all)
+Vs_all, depth_all, tts_all, base_tts, _, _, _ = Travel_time(Vs, Depth)
+#deepsoil_input(Vs_all,depth_all)
+strataPy_output(Vs_all,depth_all)
 
 
 
