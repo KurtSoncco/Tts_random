@@ -16,7 +16,7 @@ This project uses the Travel Time Randomization method to create N profiles for 
 - Required Python packages: numpy, pandas
 
 ## Input 
-The code requires a CSV file with the data of Vs and Depth of each layer. The code currently uses S.I. units.
+The code requires a CSV file with the data of Vs and Depth of top of each layer. The code currently uses S.I. units.
 
 - CSV file with Depth and Vs values (in S.I. Units)
 
