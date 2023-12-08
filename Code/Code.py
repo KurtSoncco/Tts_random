@@ -272,7 +272,7 @@ def Travel_time(Vs: list, Depth: list, Nprofiles=50, Sigmaln_zh=0.05, Sigmaln_Vh
         ax4.set_title('Final Randomized tts Profiles')
 
         # Save the figure
-        fig_name = filename + "Final_tts_profile.png"
+        fig_name = filename + " Final_tts_profile.png"
         plt.savefig(fig_name,dpi=300,bbox_inches='tight')
         if show_fig == False:
             plt.close(fig4)
@@ -357,7 +357,7 @@ def Travel_time(Vs: list, Depth: list, Nprofiles=50, Sigmaln_zh=0.05, Sigmaln_Vh
                 'xanchor': 'center',
                 'yanchor': 'top'})
         # Save the figure
-        fig.write_html(filename + "Final_Vs_tts_profile.html")
+        fig.write_html(filename + " Final_Vs_tts_profile.html")
         if show_fig == True:
             fig.show()
         
