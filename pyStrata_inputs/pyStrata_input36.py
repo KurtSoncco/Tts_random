@@ -1,10 +1,10 @@
 import pystrata
 profile = pystrata.site.Profile(
-    [	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 67.9108, 2320.4686),
-	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 5.0058, 143.1120),
-	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 10.0809, 144.6909),
-	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 9.3920, 185.1136),
-	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 9.3977, 302.2642),
-	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 23.0930, 288.1851),
-	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 28.3547, 342.0770),
+    [	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 61.0791, 2344.3935),
+	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 3.9408, 154.7239),
+	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 11.3263, 154.0254),
+	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 8.6741, 157.7812),
+	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 11.1473, 223.9422),
+	pystrata.site.Layer(pystrata.site.SoilType('Soil', 18.0, None, 0.05), 17.6693, 288.7683),
+	pystrata.site.Layer(pystrata.site.SoilType('Rock', 18.0, None, 0.05), 33.0901, 289.0871)
 ])

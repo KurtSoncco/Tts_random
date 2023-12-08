@@ -28,9 +28,9 @@ Depth = mat['Depth'].values.reshape(-1)
 Vs = mat['Vs'].values.reshape(-1)
 
 ## Run Travel_time function
-Vs_all, depth_all, tts_all, base_tts, _, _, _ = Travel_time(Vs, Depth)
+Vs_all, depth_all, tts_all, base_tts, _, _, _ = Travel_time(Vs, Depth, show_fig=True)
 #deepsoil_input(Vs_all,depth_all)
-strataPy_output(Vs_all,depth_all)
+#strataPy_output(Vs_all,depth_all)
 
 
 

@@ -60,7 +60,8 @@ for i in dataframes.keys():
     Vs = data.iloc[:, 1].values
     Depth = data.iloc[:, 0].values
     #print(i)
-    Vs_all, depth_all, tts_all, base_tts, std_tts, std_Vs, depth_inter = Travel_time(Vs, Depth, fig_plot=False, save_file=False)
+    Vs_all, depth_all, tts_all, base_tts, std_tts, std_Vs, depth_inter = Travel_time(Vs, Depth, fig_plot=True, 
+                                                                                     save_file=False, filename=i)
     results[i] = [std_tts, std_Vs, depth_inter]
 
 # Create a DataFrame from the results dictionary

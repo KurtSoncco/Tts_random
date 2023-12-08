@@ -9,27 +9,36 @@ import numpy as np
 import pandas as pd
 from Travel_time_Randomization import *
 import matplotlib.pyplot as plt
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import os
 
 
-def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.05,sigmalntts=0.05,c_values_Toro=None,half_space_Toro=None,delta_rho=None,fig_plot=True,save_file=True):
+
+def Travel_time(Vs: list, Depth: list, Nprofiles=50, Sigmaln_zh=0.05, Sigmaln_Vh=0.05, sigmalntts=0.05,
+                c_values_Toro=None, half_space_Toro=None, interlayer_c=None, delta_rho=None,
+                fig_plot=True, save_file=True, filename="", show_fig=False):
     """
     This main function creates the N profiles with travel time randomization.
     
     Parameters:
-    Vs (list): Array of shear wave velocities.
-    Depth (list): Array containing position of layers.
-    Nprofiles (int, optional): Number of profiles. Default is 50.
-    Sigmaln_zh (float, optional): Logarithmic standard deviation of zh. Default is 0.05.
-    Sigmaln_Vh (float, optional): Logarithmic standard deviation of Vh. Default is 0.05.
-    sigmalntts (float, optional): Logarithmic standard deviation of tts. Default is 0.05.
-    c_values_Toro (list, optional): Coefficients for layer occurrence rate parameter. Default is None (Pasari original parameters).
-    half_space_Toro (list, optional): Parameters for halspace depth generation. Default is None (Pasari original paramters).
-    delta_rho (float, optional): Fixed value for correlation parameter to avoid unrealistic Vs values. Default is None. (Fixed value of 0.2)
-    fig_plot (bool, optional): If True, the function will plot the results. Default is True.
-    save_file (bool, optional): If True, the function will save the results to a file. Default is True.
-    
+    Vs (list): A list of shear wave velocities for each layer.
+    Depth (list): A list of depths corresponding to the bottom of each layer.
+    Nprofiles (int, optional): The number of seismic profiles to generate. Default is 50.
+    Sigmaln_zh (float, optional): The logarithmic standard deviation of the layer thickness. Default is 0.05.
+    Sigmaln_Vh (float, optional): The logarithmic standard deviation of the shear wave velocity. Default is 0.05.
+    sigmalntts (float, optional): The logarithmic standard deviation of the travel time. Default is 0.05.
+    c_values_Toro (list, optional): A list of coefficients for the layer occurrence rate parameter. If None, Pasari's original parameters are used.
+    half_space_Toro (list, optional): A list of parameters for generating the depth of the half-space. If None, Pasari's original parameters are used.
+    interlayer_c (list, optional): A list of parameters for generating the interlayer correlation. If None, Pasari's original parameters are used.
+    delta_rho (float, optional): A fixed value for the correlation parameter to avoid unrealistic shear wave velocities. If None, a fixed value of 0.2 is used.
+    fig_plot (bool, optional): If True, a plot of the generated profiles is created. Default is True.
+    save_file (bool, optional): If True, the generated profiles are saved to a file. Default is True.
+    filename (str, optional): The name of the file to save the profiles to. If empty, a default name is used.
+    show_fig (bool, optional): If True, the plot of the generated profiles is displayed. Default is False.
+
     Returns:
-    The function returns the plot of randomized profiles with a provided output function for different programs.
+    A list of generated seismic profiles.
     """
     
     ## Optional Generic Inputs
@@ -64,14 +73,17 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
     else:
         c1,c2,c3,minRate,maxRate = c_values_Toro
 
-    if half_space_Toro == None:
-        # Parameters for halspace depth generation, for generic case
+    if interlayer_c == None:
+        # Parameters for interlayer correlation, for generic case
         rho200 = 0.766;
         d0 = 0;
         b = 0.2355;
         rho0 = 0.6364;
         delta = 5.8532;
+    else:
+        rho200,d0,b,rho0,delta = interlayer_c
 
+    if half_space_Toro == None:
         # Parameter for halspace velocity randomization        
         correlation_h = 0.508;
     else: 
@@ -85,6 +97,16 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
     
     # Plot Vs profile
     if fig_plot == True:
+
+        # Create folder to save figures
+        if not os.path.exists('Figures'):
+            os.makedirs('Figures')
+
+        # Add path to filename
+        filename = 'Figures/' + filename
+        
+        # Figure name
+        fig_name = filename + " Vs_profile.png"
         # Initiate Figure
         figure, ax1 = plt.subplots(figsize=(4,4));
         #rot = transforms.Affine2D().rotate_deg(90)
@@ -101,6 +123,9 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
         # Label axes
         ax1.set_ylabel('Depth')
         ax1.set_xlabel('Vs')
+
+
+    # -------------------------------------------------------------------------
     
     
     # The format of Depth and Vs assumes that the last value is the starting
@@ -113,9 +138,10 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
     z_halfspace, Vs_halfspace = tts_Rand_Halfspace(zh_mean, Sigmaln_zh, Vh_mean, Sigmaln_Vh, correlation_h, Nprofiles);
 
     if fig_plot == True:
-        # Plot Results
+        # Figure name
+        fig_name = filename + " Halfspace.png"
         # Initiate Figure
-        fig, ax = plt.subplots(1,2)
+        fig, ax = plt.subplots(1,2,figsize=(12, 6))
         fig.suptitle('Randomized Halfspace Depth and Vs')
     
     
@@ -137,6 +163,15 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
         ax1.scatter(Vh_mean, zh_mean, color='red', s=15, label='Base-Case Halfspace')
         ax1.legend(loc='upper right') # add legend
 
+        # Save the figure
+        plt.savefig(fig_name,dpi=300,bbox_inches='tight')
+
+        if show_fig == False:
+            plt.close(fig)
+            plt.close(figure)
+    
+    # -------------------------------------------------------------------------
+
     ## Randomize Layer Thicknesses
     depth_all, rate_all = tts_Rand_Layers(c3, c1, c2, minRate, maxRate, zh_mean, Sigmaln_zh, Nprofiles);
 
@@ -152,8 +187,11 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
     # Plot Results
     if fig_plot == True:
         # This will allow us to visualize the randomized layer thicknesses
+        # Figure name
+        fig_name = filename + " Layer_thicknesses.png"
+
         # Initiate Figure
-        fig2, ax2 = plt.subplots(figsize=(9.8, 4.5))
+        fig2, ax2 = plt.subplots(figsize=(15, 11))
     
         #set(gcf,'units','inches','position',[9.8,4.5,6.5,3])
     
@@ -166,23 +204,28 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
             
             # loop over layers for each realization
             for layer in range(len(final_merged_depths[realization])-1):
-                
                 # plot each layer as a colored rectangle with randomized thickness
                 x0, y0, w, h = [realization-.5,final_merged_depths[realization][layer],1,final_merged_depths[realization][layer+1]-final_merged_depths[realization][layer]]
                 rectangle = plt.Rectangle((x0,y0), w, h, facecolor=layer_colors[layer], edgecolor="black")
                 ax2.add_patch(rectangle)
                 ax2.axis("scaled")
-    
-    
-        # control appearance
+
+        # Control appearance
         ax2.invert_yaxis()
-        ax2.set_aspect(0.5)
+        ax2.set_aspect(0.2)
     
         # Label axes
-        ax2.set_xlim([0.5,realization+0.5])
+        ax2.set_xlim([0.5,realization+1.5])
         ax2.set_ylabel('Depth')
         ax2.set_xlabel('Realization')
         fig2.suptitle('Randomized Layer Thicknesses After Merging')
+
+        # Save the figure
+        plt.savefig(fig_name,dpi=300,bbox_inches='tight')
+        if show_fig == False:
+            plt.close(fig2);
+    
+    # -------------------------------------------------------------------------
     
 
 
@@ -201,45 +244,8 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
     # Calculate the standard deviation
     std_tts, std_Vs, depth_inter, median_tts, median_Vs = standard_deviation(Vs_all, tts_all, base_tts, Vs, Depth, final_merged_depths, Nprofiles)
 
-
-    # -------------------------------------------------------------------------
-    # Plot final results
-    #
-    # -------------------------------------------------------------------------
+    # Plot tts profile
     if fig_plot == True:
-        # Plot Vs profile
-        # Initiate Figure
-        fig3, ax3 = plt.subplots(figsize=(4,4))
-        ax3.set_ylabel('Depth')
-        ax3.set_xlabel('Vs')
-    
-        # Plot Randomized Vs
-        # plot only 1 for legend
-        ax3.step(Vs_all[0], final_merged_depths[0], label='Randomized Vs', \
-                 color=[.5,.5,.5],where='pre')
-        for realization in range(Nprofiles):
-            ax3.step(Vs_all[realization], final_merged_depths[realization], \
-                     alpha=0.5, color=[.5,.5,.5],where='pre')
-    
-    
-        # Plot Base-case Vs
-        # Because of how stairs() works, we will plot depth on x-axis and Vs on
-        # y-axis and then flip the view to get correct plot
-        ax3.step(Vs, Depth, '-k', lw=1.2, label='Base-Case Vs', where='pre')
-        #view([90 -90])
-        ax3.legend(loc='upper right')
-        ax3.invert_yaxis()
-        ax3.xaxis.tick_top() 
-        ax3.xaxis.set_label_position('top') 
-        ax3.set_title('Final Randomized Vs Profiles');
-        
-        
-    
-    # Additonal plots 
-    
-    # tts vs Depth
-    if fig_plot == True:
-        # Plot Vs profile
         # Initiate Figure
         fig4, ax4 = plt.subplots(figsize=(4,4))
         ax4.set_ylabel('Depth')
@@ -263,92 +269,99 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
         ax4.invert_yaxis()
         ax4.xaxis.tick_top() 
         ax4.xaxis.set_label_position('top') 
-        ax4.set_title('Final Randomized tts Profiles');
-        
+        ax4.set_title('Final Randomized tts Profiles')
+
+        # Save the figure
+        fig_name = filename + "Final_tts_profile.png"
+        plt.savefig(fig_name,dpi=300,bbox_inches='tight')
+        if show_fig == False:
+            plt.close(fig4)
+         
     
+    # -------------------------------------------------------------------------
+    # Plot final results
+    #
+    # -------------------------------------------------------------------------
         
-    # Plot 4x4 figure
+    # Plot 2x2 figure
     if fig_plot == True:
-        # Plot 4x4 figure
-        fig0, ax0 = plt.subplots(2,2,figsize=(10,10))
-        
-        # Vs plot
-        ax0[0,0].set_ylabel('Depth (m)')
-        ax0[0,0].set_xlabel('Vs (m/s)')
-    
+        # Plotly subplots
+        fig = make_subplots(rows=2, cols=2)
+
         # Plot Randomized Vs
-        # plot only 1 for legend
-        ax0[0,0].step(Vs_all[0], final_merged_depths[0], label='Randomized Vs', color=[.5,.5,.5],where='pre')
+        # Add scatter plot data to the first subplot
+        fig.add_trace(go.Scatter(x=Vs_all[0], y=final_merged_depths[0], mode='lines', name='Randomized Vs',
+                                 line=dict(color='gray', width=0.5), line_shape='vh',
+                                 legendgroup="group1", hovertemplate='Randomized Vs'), row=1, col=1)
         for realization in range(Nprofiles):
-            ax0[0,0].step(Vs_all[realization], final_merged_depths[realization], alpha=0.5, color=[.5,.5,.5],where='pre')
-    
-    
-        # Plot Base-case Vs
-        # Because of how stairs() works, we will plot depth on x-axis and Vs on
-        # y-axis and then flip the view to get correct plot
-        ax0[0,0].step(Vs, Depth, '-k', lw=1.2, label='Base-Case Vs', where='pre')
-        ax0[0,0].step(median_Vs, depth_inter, '--', color='#90EE90', lw=1.0, label='Median', where='pre')
-        #view([90 -90])
-        ax0[0,0].set_xlim(xmin=0)
-        ax0[0,0].set_ylim(ymin=0,ymax=Depth[-1])
-        ax0[0,0].legend(loc='upper right')
-        ax0[0,0].invert_yaxis()
-        ax0[0,0].xaxis.tick_top()
-        ax0[0,0].xaxis.set_label_position('top') 
-        #ax0[0,0].set_title('Final Randomized Vs Profiles');
+            fig.add_trace(go.Scatter(x=Vs_all[realization], y=final_merged_depths[realization], mode='lines', 
+                                     line=dict(color='gray', width=0.5), showlegend=False, line_shape='vh'), row=1, col=1)
+            
+        # Add base-case Vs to the subplot
+        fig.add_trace(go.Scatter(x=Vs, y=Depth, mode='lines', name='Base-Case Vs', line_shape='vh', line=dict(color='black', width=1.2), 
+                                 legendgroup="group1", hovertemplate='Base-Case Vs'), row=1, col=1)
+        # Add median Vs to the subplot
+        fig.add_trace(go.Scatter(x=median_Vs, y=depth_inter, mode='lines', name='Median', 
+                                 line=dict(color='#90EE90', width=1.0, dash='dash'), 
+                                 legendgroup="group1", hovertemplate='Median'), row=1, col=1)
+
+        # Update axis properties
+        fig.update_xaxes(title_text="Vs (m/s)", title_standoff=2, range=[0, None], row=1, col=1, side="top")
+        fig.update_yaxes(title_text="Depth (m)", title_standoff=2, range=[Depth[-1], 0], row=1, col=1)
+
+        # Plot std_Vs
+        fig.add_trace(go.Scatter(x=std_Vs, y=depth_inter, mode='lines', name=r'$\sigma_{ln V_s}$'), row=1, col=2)
+
+        # Update axis properties
+        fig.update_xaxes(title_text=r'$\sigma_{ln V_s}$', title_standoff=2, range=[0, 0.5], row=1, col=2, side="top")
+        fig.update_yaxes(title_text="Depth (m)", title_standoff=2, range=[Depth[-1], 0], row=1, col=2)
+
         
-        
-        # std_sigma plot
-        ax0[0,1].plot(std_Vs, depth_inter)
-        ax0[0,1].set_ylabel('Depth (m)')
-        #ax0[0,1].set_xlabel(r'$\sigma_{ln V_s}$')
-        ax0[0,1].set_xlim(xmin=0, xmax=0.5)
-        ax0[0,1].set_ylim(ymin=0, ymax=Depth[-1])
-        ax0[0,1].invert_yaxis()
-        ax0[0,1].xaxis.tick_top()
-        ax0[0,1].xaxis.set_label_position('top') 
-        ax0[0,1].set_title(r'$\sigma_{ln V_s}$');
-        
-        # tts plot
-        ax0[1,0].set_ylabel('Depth (m)')
-        ax0[1,0].set_xlabel('Travel Time tts (s)')
-    
-        # Plot Randomized Vs
+        # Plot Randomized tts
         # plot only 1 for legend
-        ax0[1,0].plot(tts_all[0], final_merged_depths[0], label='Randomized tts', \
-                 color=[.5,.5,.5])
+        fig.add_trace(go.Scatter(x=tts_all[0], y=final_merged_depths[0], mode='lines', line=dict(color='gray', width=0.5), 
+                                 name='Randomized tts', legendgroup="group3", hovertemplate='Randomized tts'), row=2, col=1)
         for realization in range(Nprofiles):
-            ax0[1,0].plot(tts_all[realization], final_merged_depths[realization], \
-                     alpha=0.5, color=[.5,.5,.5])
-    
-    
-        # Plot Base-case tts
-        ax0[1,0].plot(base_tts, Depth, '-k', lw=1.2, label='Base-Case tts')
-        ax0[1,0].plot(median_tts, depth_inter, '--', color='#90EE90', label='Median')
-        #view([90 -90])
-        ax0[1,0].set_xlim(xmin=0)
-        ax0[1,0].set_ylim(ymin=0,ymax=Depth[-1])
-        ax0[1,0].legend(loc='upper right')
-        ax0[1,0].invert_yaxis()
-        ax0[1,0].xaxis.tick_top() 
-        ax0[1,0].xaxis.set_label_position('top') 
-        #ax0[1,0].set_title('Final Randomized tts Profiles');
+            fig.add_trace(go.Scatter(x=tts_all[realization], y=final_merged_depths[realization], mode='lines',
+                                     line=dict(color='gray', width=0.5), showlegend=False), row=2, col=1)
         
+        # Add base-case tts to the subplot
+        fig.add_trace(go.Scatter(x=base_tts, y=Depth, mode='lines', name='Base-Case tts', 
+                                 line=dict(color='black', width=1.2), legendgroup="group3", hovertemplate='Base-Case tts'), row=2, col=1)
+
+        # Add median tts to the subplot
+        fig.add_trace(go.Scatter(x=median_tts, y=depth_inter, mode='lines', name='Median', 
+                                 line=dict(color='#90EE90', width=1.0, dash='dash'), 
+                                 legendgroup="group3", hovertemplate='Median tts'), row=2, col=1)
         
-        # Plot std_lntts
-        ax0[1,1].plot(std_tts, depth_inter)
-        ax0[1,1].vlines(sigmalntts,ymin=0,ymax=Depth[-1],color='red')
-        ax0[1,1].text(sigmalntts+0.002, Depth[-1]*0.95, 'Input: '+str(sigmalntts), rotation=90, color='red')
-        ax0[1,1].set_ylabel('Depth (m)')
-        #ax0[0,1].set_xlabel(r'$\sigma_{ln V_s}$')
-        ax0[1,1].set_xlim(xmin=0,xmax=0.10)
-        ax0[1,1].set_ylim(ymin=0,ymax=Depth[-1])
-        ax0[1,1].invert_yaxis()
-        ax0[1,1].xaxis.tick_top()
-        ax0[1,1].xaxis.set_label_position('top') 
-        ax0[1,1].set_title(r'$\sigma_{ln tts}$')
+        # Update axis properties
+        fig.update_xaxes(title_text="tts (s)", title_standoff=2, row=2, col=1, side="top", range=[0, None])
+        fig.update_yaxes(title_text="Depth (m)", title_standoff=2, row=2, col=1, range=[Depth[-1], 0])
+
+        # Plot std_tts
+        fig.add_trace(go.Scatter(x=std_tts, y=depth_inter, mode='lines', name=r'$\sigma_{ln tts}$'), row=2, col=2)
+        fig.add_vline(x=sigmalntts, line_color="red", row=2, col=2)
+        fig.add_annotation(x=sigmalntts-0.007, y=Depth[-1]*0.95, text="Input: "+str(sigmalntts), 
+                           showarrow=False, font=dict(color="red"), row=2, col=2)
+
+        # Update axis properties
+        fig.update_xaxes(title_text=r'$\sigma_{ln tts}$', title_standoff=2, row=2, col=2, range=[0, 0.1], side="top")
+        fig.update_yaxes(title_text="Depth (m)", title_standoff=2, row=2, col=2, range=[Depth[-1], 0])
+
+        # Update title and size
+        fig.update_layout(
+            title={
+                'text': "Final Randomized Vs and tts Profiles",
+                'y':0.95,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'})
+        # Save the figure
+        fig.write_html(filename + "Final_Vs_tts_profile.html")
+        if show_fig == True:
+            fig.show()
         
-        plt.savefig('Code\graph.png',dpi=300,bbox_inches='tight');
+
         
     # Save file of Vs
     if save_file == True:
@@ -359,7 +372,7 @@ def Travel_time(Vs: list, Depth: list,Nprofiles=50,Sigmaln_zh=0.05,Sigmaln_Vh=0.
         # sort columns
         idx = np.argsort([k[0:2] for k in df.columns])
         df = df.iloc[:,idx]
-        df.to_csv("Data.csv")
+        df.to_csv("Randomized_Data.csv")
         
 
     return Vs_all, final_merged_depths, tts_all, base_tts, std_tts, std_Vs, depth_inter
